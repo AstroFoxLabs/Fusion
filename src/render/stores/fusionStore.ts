@@ -171,6 +171,11 @@ export const useFusionStore = defineStore('fusion', () => {
             newEl?.remove();
             // Revoke the object URL to free up memory - important for large images
             URL.revokeObjectURL(blobUrl);
+            modalStore.openSimpleConfirmationModal(
+                `Export Successful for image ${container.name}`,
+                `Your image has been exported successfully to ${path}.`,
+                'Cool!',
+            );
         } catch (error) {
             console.error('Error exporting image:', error);
             throw error;

@@ -3,6 +3,8 @@ import LogService from '@main/services/LogService.js';
 import dotenv from 'dotenv';
 import electron from 'electron';
 import path from 'path';
+import FileStorageService from './services/FileStorageService';
+import SettingsService from './services/SettingsService';
 import UpdateService from './services/UpdateService';
 
 dotenv.config();
@@ -35,7 +37,6 @@ const windowSettingsProd: Electron.BrowserWindowConstructorOptions = {
         preload: path.join(__dirname, '../preload', 'preload.js'),
     },
     autoHideMenuBar: true,
-    frame: false,
 };
 
 const createWindow = async () => {
@@ -50,7 +51,13 @@ const createWindow = async () => {
     }
 };
 
-const initFilesystem = async () => {};
+const initFilesystem = async () => {
+    const settings = SettingsService.getInstance().getSettings();
+    if (!FileStorageService.pathExists(settings.paths.export)) {
+        LogService.info('Export path does not exist. Creating export directory at', settings.paths.export);
+        FileStorageService.createDir(settings.paths.export);
+    }
+};
 
 app.on('ready', async () => {
     try {
