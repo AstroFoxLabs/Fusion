@@ -1,6 +1,6 @@
 {
     "name": "fusion",
-    "version": "v0.0.5",
+    "version": "v0.0.6",
     "license": "GPLv3",
     "author": {
         "name": "AstroFoxLabs (Vinzenz Wetzel)",
@@ -27,12 +27,6 @@
             "buildResources": "assets",
             "output": "release"
         },
-        "extraResources": [
-            {
-                "from": "assets/defaults",
-                "to": "defaults"
-            }
-        ],
         "files": [
             "dist/**/*",
             "package.json"
@@ -42,6 +36,7 @@
             "target": "dmg"
         },
         "win": {
+            "icon": "assets/icon.ico",
             "target": [
                 "nsis",
                 "portable",
