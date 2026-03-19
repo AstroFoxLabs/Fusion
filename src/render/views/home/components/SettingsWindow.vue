@@ -123,6 +123,7 @@ const saveSettings = async () => {
 const selectFolder = async () => {
     try {
         const path = await dialogStore.fileExplorerGetFolder();
+        if (!path) throw new Error('No folder selected');
         if (tmpSettings.value) tmpSettings.value.paths.export = path;
     } catch (error) {
         modalStore.openSimpleConfirmationModal(

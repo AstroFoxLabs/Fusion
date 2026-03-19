@@ -60,16 +60,21 @@ const fusionHtmlToImageTemplate = useTemplateRef('fusion-html-to-image-template'
 
 // --- METHODS ---
 
-const onSave = () => {
+const onSave = async () => {
     const el = fusionHtmlToImageTemplate.value;
     if (!el) return;
 
     try {
         if (!settingsStore.settings.export.askForLocation) {
-            fusionStore.exportContainerAsImage(el, props.container, settingsStore.settings.paths.export);
+            await fusionStore.exportContainerAsImage(el, props.container, settingsStore.settings.paths.export);
         } else {
-            fusionStore.exportContainerAsImage(el, props.container);
+            await fusionStore.exportContainerAsImage(el, props.container);
         }
+        useModalStore().openSimpleConfirmationModal(
+            `Export Successful for container ${props.container.name}`,
+            `Your image has been exported successfully to ${settingsStore.settings.export.askForLocation ? 'the selected location' : settingsStore.settings.paths.export}.`,
+            'Cool!',
+        );
     } catch (error) {
         console.error('Error exporting container as image:', error);
         useModalStore().openSimpleConfirmationModal(

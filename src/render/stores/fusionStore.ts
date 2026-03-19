@@ -78,11 +78,9 @@ export const useFusionStore = defineStore('fusion', () => {
                 nProgress++;
                 progressStore.changeProgress(nProgress, nTotal);
             } catch (error) {
+                progressStore.resetProgress();
                 console.error(`Error processing file ${filePath}:`, error);
-                modalStore.openSimpleConfirmationModal(
-                    `Error loading image at path ${filePath}`,
-                    `An error occurred while loading the image ${filePath}. Please make sure the file is a valid image and try again.`,
-                );
+                throw error;
             }
         }
         progressStore.resetProgress();
@@ -92,28 +90,33 @@ export const useFusionStore = defineStore('fusion', () => {
         let nProcessedItems = 0;
         let path = settingsStore.settings.paths.export;
 
-        // Setting it beforehand, otherwise it will ask on each container export where to save the image
-        if (settingsStore.settings.export.askForLocation) {
-            path = await dialogStore.fileExplorerGetFolder();
-        }
-
-        for (const container of fusionContainers.value) {
-            try {
-                const el = document.getElementById(container.id);
-                if (!el) continue;
-                await exportContainerAsImage(el, container, path);
-            } catch (error) {
-                console.error('Error exporting containers:', error);
-                modalStore.openSimpleConfirmationModal(
-                    `Export Error for container ${container.name}`,
-                    'Please try again.',
-                    'Sad',
+        try {
+            if (settingsStore.settings.export.askForLocation) {
+                path = await dialogStore.fileExplorerGetFolder();
+            } else if (!settingsStore.settings.paths.export && !path) {
+                throw new Error(
+                    'No export path set. Please set an export path in the settings or enable "Ask for location on export".',
                 );
             }
-            nProcessedItems++;
-            progressStore.changeProgress(nProcessedItems, fusionContainers.value.length);
+
+            for (const container of fusionContainers.value) {
+                try {
+                    const el = document.getElementById(container.id);
+                    if (!el) continue;
+                    await exportContainerAsImage(el, container, path);
+                } catch (error) {
+                    console.error('Error exporting containers:', error);
+                    throw error;
+                }
+                nProcessedItems++;
+                progressStore.changeProgress(nProcessedItems, fusionContainers.value.length);
+            }
+            progressStore.resetProgress();
+        } catch (error) {
+            progressStore.resetProgress();
+            console.error('Error during export process:', error);
+            throw error;
         }
-        progressStore.resetProgress();
     };
 
     // HTML Element needed for html-to-image to work
@@ -171,11 +174,6 @@ export const useFusionStore = defineStore('fusion', () => {
             newEl?.remove();
             // Revoke the object URL to free up memory - important for large images
             URL.revokeObjectURL(blobUrl);
-            modalStore.openSimpleConfirmationModal(
-                `Export Successful for image ${container.name}`,
-                `Your image has been exported successfully to ${path}.`,
-                'Cool!',
-            );
         } catch (error) {
             console.error('Error exporting image:', error);
             throw error;

@@ -43,21 +43,35 @@ const progressStore = useProgressStore();
 
 const loadImageFilesAsElements = async (e: Event) => {
     const paths = await dialogStore.fileExplorerGetImages();
-    await fusionStore.createElements(paths);
+    try {
+        await fusionStore.createElements(paths);
+    } catch (error) {
+        console.error('Error loading image files:', error);
+        modalStore.openSimpleConfirmationModal(
+            'Error Loading Files',
+            'An error occurred while loading the image files. Please make sure the files are valid images and try again.',
+            'Sad',
+        );
+    }
+
 };
 
 const exportAll = async () => {
-    await fusionStore.exportAllContainersAsImages();
-    modalStore.openModal({
-        title: 'Export Complete',
-        description: `Exported images successfully!`,
-        cbs: [
-            {
-                title: 'Cool!',
-                cb: () => modalStore.closeModal(),
-            },
-        ],
-    });
+    try {
+        await fusionStore.exportAllContainersAsImages();
+        modalStore.openSimpleConfirmationModal(
+            'Export Process Completed',
+            'All containers have been exported successfully.',
+            'Cool!',
+        );
+    } catch (error) {
+        console.error('Error during export process:', error);
+        modalStore.openSimpleConfirmationModal(
+            'Export Process Error',
+            'An error occurred during the export process. Please make sure you have set a valid export path in the settings or enabled "Ask for location on export".',
+            'Sad',
+        );
+    }
 };
 </script>
 
