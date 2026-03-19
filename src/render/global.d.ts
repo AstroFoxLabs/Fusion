@@ -8,7 +8,6 @@ declare global {
             disk: {
                 saveFile: (path: string, data: Uint8Array) => Promise<void>;
                 readImage: (filePath: string) => Promise<IpcResponse<ReturnImageFileType>>;
-                selectFolder: () => Promise<IpcResponse<string>>;
                 createBufferFromFile: (filePath: string) => Promise<IpcResponse<Uint8Array>>;
                 createBufferHash: (buffer: Uint8Array) => Promise<IpcResponse<string>>;
             };

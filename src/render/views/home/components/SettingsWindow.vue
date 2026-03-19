@@ -46,6 +46,7 @@ import Field from '@render/components/core/Field.vue';
 import FieldGroup from '@render/components/core/FieldGroup.vue';
 import InputCheckbox from '@render/components/core/InputCheckbox.vue';
 import InputField from '@render/components/core/InputField.vue';
+import { useDialogStore } from '@render/stores/dialogStore';
 import { useModalStore } from '@render/stores/modalStore';
 import { useSettingsStore } from '@render/stores/settingsStore';
 import { ALLOWED_IMAGE_TYPES } from '@shared/constants';
@@ -57,6 +58,7 @@ import { onMounted, ref } from 'vue';
 
 const settingsStore = useSettingsStore();
 const modalStore = useModalStore();
+const dialogStore = useDialogStore();
 
 // --- STATES ---
 const tmpSettings = ref<AppSettings>();
@@ -119,15 +121,21 @@ const saveSettings = async () => {
 };
 
 const selectFolder = async () => {
-    const res = await window.electron.disk.selectFolder();
-    if (res.success) {
-        tmpSettings.value!.paths.export = res.data;
+    try {
+        const path = await dialogStore.fileExplorerGetFolder();
+        if (tmpSettings.value) tmpSettings.value.paths.export = path;
+    } catch (error) {
+        modalStore.openSimpleConfirmationModal(
+            'Folder Selection Error',
+            'An error occurred while selecting the folder. Please try again.',
+            'Sad',
+        );
+        console.error('Error selecting folder:', error);
     }
 };
 
 onMounted(async () => {
     tmpSettings.value = await settingsStore.loadSettings();
-    console.log('Loaded settings into temporary state:', tmpSettings.value);
 });
 </script>
 

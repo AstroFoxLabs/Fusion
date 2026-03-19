@@ -17,7 +17,6 @@ contextBridge.exposeInMainWorld('electron', {
         saveFile: (path: string, data: Uint8Array): Promise<void> => ipcRenderer.invoke('save-file', { path, data }),
         readImage: (filePath: string): Promise<IpcResponse<ReturnImageFileType>> =>
             ipcRenderer.invoke('read-image', { filePath }),
-        selectFolder: (): Promise<IpcResponse<string>> => ipcRenderer.invoke('select-folder'),
         createBufferFromFile: (filePath: string): Promise<IpcResponse<Uint8Array>> =>
             ipcRenderer.invoke('create-buffer-from-file', { filePath }),
         createBufferHash: (buffer: Uint8Array): Promise<IpcResponse<string>> =>
