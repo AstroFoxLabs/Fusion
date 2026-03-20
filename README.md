@@ -5,7 +5,7 @@ There is no limit on how many images you can combine with eachother and to make 
 Export them easily as a batch with a single click or just export a single.
 
 <p align="center">
-  <img width="631" height="631" alt="icon" src="https://github.com/user-attachments/assets/752e6cba-7afc-4c0c-86a4-b998b44446bc" />
+  <img width="250" height="631" alt="icon" src="https://github.com/user-attachments/assets/752e6cba-7afc-4c0c-86a4-b998b44446bc" />
 </p>
 
 ## Features
